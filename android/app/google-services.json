@@ -1,0 +1,87 @@
+{
+  "project_info": {
+    "project_number": "814689984399",
+    "firebase_url": "https://ilugan-database-default-rtdb.firebaseio.com",
+    "project_id": "ilugan-database",
+    "storage_bucket": "ilugan-database.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814689984399:android:bb7a381d02bbebb06875fa",
+        "android_client_info": {
+          "package_name": "com.example.alternativegps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrdPL5XuG9LSuTBop2w89oKSLajowDfE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814689984399:android:6df2ef91513eafa26875fa",
+        "android_client_info": {
+          "package_name": "com.example.ilugan_passenger_mobile_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrdPL5XuG9LSuTBop2w89oKSLajowDfE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814689984399:android:d150cd0a0991afd76875fa",
+        "android_client_info": {
+          "package_name": "com.example.ilugan_passsenger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrdPL5XuG9LSuTBop2w89oKSLajowDfE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814689984399:android:af1a772eccd5c45a6875fa",
+        "android_client_info": {
+          "package_name": "com.example.iluganmobile_conductors_and_inspector"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrdPL5XuG9LSuTBop2w89oKSLajowDfE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
