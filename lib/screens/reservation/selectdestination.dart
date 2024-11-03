@@ -1,16 +1,14 @@
-// ignore_for_file: must_be_immutable, avoid_print, use_build_context_synchronously
-
-import 'dart:math';
+// ignore_for_file: must_be_immutable, avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+// import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/reservation/reservation.dart';
-// import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
 import 'package:ilugan_passsenger/screens/reservation/reservation.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
+// import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/reservation/reservation.dart';
+// import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
 class SelectLocationScreen extends StatefulWidget {
   SelectLocationScreen(
@@ -43,16 +41,14 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   bool isLoading = false; // Loading state for search
   String? polylinecode;
   Map<PolylineId, Polyline> _polylines = {};
-  Set<Marker> _markers = {}; // Set to store markers
-  List<LatLng> polylinePoints = []; 
-  PolylinePoints polylinePoint = PolylinePoints();
+  final Set<Marker> _markers = {}; // Set to store markers
+  // PolylinePoints polylinePoints = PolylinePoints();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance
         .addPostFrameCallback((timeStamp) async => await initializemap());
-      getPolylinesCode();
   }
 
   static const CameraPosition _initialCameraPosition = CameraPosition(
@@ -69,62 +65,49 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   }
 
   // Function to handle map tap and store the selected LatLng
-  Future<void> getPolylinesCode() async {
-    polylinecode = await ApiCalls()
-        .fetchPolyline(widget.currentlocation, widget.destinationloc);
-    if (polylinecode != null) {
-      polylinePoints = decodePolyline(polylinecode!);
-    }
-  }
-
-  // Decode polyline to a list of LatLng points
-  List<LatLng> decodePolyline(String polyline) {
-    // Decode logic to transform polyline string to list of LatLng points
-    List<PointLatLng> decodedPoints = polylinePoint.decodePolyline(polyline);
-    return decodedPoints.map((point) => LatLng(point.latitude, point.longitude)).toList();
-  }
-
-  // Check if selected location is near polyline route
-  bool isLocationNearPolyline(LatLng location, double thresholdMeters) {
-    for (LatLng point in polylinePoints) {
-      double distance = calculateDistance(location, point);
-      if (distance < thresholdMeters) return true;
-    }
-    return false;
-  }
-
-  // Haversine formula to calculate distance between two points
-  double calculateDistance(LatLng point1, LatLng point2) {
-    const earthRadius = 6371000; // in meters
-    final dLat = _toRadians(point2.latitude - point1.latitude);
-    final dLng = _toRadians(point2.longitude - point1.longitude);
-    final a = sin(dLat / 2) * sin(dLat / 2) +
-              cos(_toRadians(point1.latitude)) * cos(_toRadians(point2.latitude)) *
-              sin(dLng / 2) * sin(dLng / 2);
-    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    return earthRadius * c;
-  }
-
-  double _toRadians(double degrees) => degrees * pi / 180;
-
   void _onMapTapped(LatLng position) async {
-    setState(() => selectedLocation = position);
-    bool isValid = isLocationNearPolyline(position, 100); // Check if within 100m of route
-
-    if (isValid) {
-      // Valid location selected, add marker and update address
-      String fetchedAddress = await ApiCalls().reverseGeocode(position.latitude, position.longitude);
-      setState(() {
-        address = fetchedAddress;
-      });
-      _addMarker(position, "Selected Location", BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue));
-    } else {
-      // Show "Invalid Location" message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid location: too far from the route")),
-      );
-    }
+    setState(() {
+      selectedLocation = position;
+    });
+    String fetchedAddress =
+        await ApiCalls().reverseGeocode(position.latitude, position.longitude);
+    print(fetchedAddress);
+    setToLocation(position);
+    setState(() {
+      address = fetchedAddress;
+    });
+    _addMarker(position, "Selected Location",
+        BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue));
   }
+
+  // Future<void> getPolylinesCode() async {
+  //   polylinecode = await ApiCalls()
+  //       .fetchPolyline(widget.currentlocation, widget.destinationloc);
+  //   setState(() {});
+  //   if (polylinecode != null) {
+  //     print("getting polyline");
+  //     List<LatLng> polylinePoints =
+  //         await getPolylinepoints(); // Fetch the points
+  //     if (polylinePoints.isNotEmpty) {
+  //       generatePolyLineFromPoints(
+  //           polylinePoints); // Generate polyline only if points are not empty
+  //     } else {
+  //       print("No polyline points found.");
+  //     }
+  //   }
+  // }
+
+  // Future<void> generatePolyLineFromPoints(
+  //     List<LatLng> polylineCoordinates) async {
+  //   final polyline = Polyline(
+  //     polylineId: const PolylineId('polyline'),
+  //     color: Colors.blueAccent,
+  //     points: polylineCoordinates,
+  //     width: 8,
+  //   );
+
+  //   setState(() => _polylines[polyline.polylineId] = polyline);
+  // }
 
   // Future<List<LatLng>> getPolylinepoints() async {
   //   const String googlemapapikey = "AIzaSyBFTetVk2_X4bi6bMsEn9t5qGll7DfW8Mc";
@@ -217,7 +200,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
             initialCameraPosition: _initialCameraPosition,
             onMapCreated: (controller) {
               mapController = controller;
-              getPolylinesCode();
+              // getPolylinesCode();
             },
             polylines: Set<Polyline>.of(_polylines.values),
             onTap: _onMapTapped,

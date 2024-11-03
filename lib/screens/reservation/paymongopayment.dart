@@ -11,11 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
 import 'package:ilugan_passsenger/screens/reservation/ticketdownload.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentScreen extends StatefulWidget {
-  PaymentScreen({super.key, 
-      required this.link, 
+  PaymentScreen(
+      {super.key,
+      required this.link,
       required this.companyId,
       required this.current,
       required this.currentlocc,
@@ -26,8 +29,7 @@ class PaymentScreen extends StatefulWidget {
       required this.distance,
       required this.type,
       required this.resnum,
-      required this.paymentId
-      });
+      required this.paymentId});
 
   DateTime current;
   String currentlocc;
@@ -41,7 +43,8 @@ class PaymentScreen extends StatefulWidget {
   String resnum;
   String paymentId;
 
-  final String link; // Make it a final since it's passed as a required argument.
+  final String
+      link; // Make it a final since it's passed as a required argument.
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -50,13 +53,14 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   late WebViewController controller;
   String? paymentlink;
-   int occ = 0;
+  int occ = 0;
   int reserved = 0;
   int seatsavail = 0;
 
   @override
   void initState() {
     super.initState();
+    print(widget.resnum);
 
     // Initialize the payment link when the widget is created.
     paymentlink = widget.link;
@@ -71,21 +75,122 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String today = DateFormat.yMMMMd('en_US').format(DateTime.now());
+
+  void addCompanyIncome() async {
+    double income = 0;
+    int numberOfPassengers = 0;
+
+    // Reference to the document you want to update
+    DocumentReference documentRef = FirebaseFirestore.instance
+        .collection('companies')
+        .doc(widget.companyId)
+        .collection('data')
+        .doc(today);
+
+    try {
+      // Fetch current data from Firestore
+      DocumentSnapshot snapshot = await documentRef.get();
+
+      if (snapshot.exists) {
+        // Document exists, retrieve current values
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        income = (data['total_income'] ?? 0).toDouble();
+        numberOfPassengers = (data['total_passengers'] ?? 0).toInt();
+      }
+
+      // Calculate new totals
+      double newIncome = income + double.parse(widget.amount.toString());
+      int newNumberOfPassengers = numberOfPassengers + 1;
+
+      // Set the document with updated values (or create it if it doesn’t exist)
+      await documentRef.set({
+        'total_income': newIncome,
+        'total_passengers': newNumberOfPassengers,
+      }, SetOptions(merge: true)).then((value) {
+        addBusIncome();
+      });
+
+      print('Company data updated with new income and passenger count.');
+    } catch (e) {
+      print('Error updating bus income: $e');
+    }
+  }
+
+  void addBusIncome() async {
+    double income = 0;
+    int numberOfPassengers = 0;
+
+    // Reference to the document you want to update
+    DocumentReference documentRef = FirebaseFirestore.instance
+        .collection('companies')
+        .doc(widget.companyId)
+        .collection('buses')
+        .doc(widget.busnum)
+        .collection('data')
+        .doc(today)
+        ;
+
+    try {
+      // Fetch current data from Firestore
+      DocumentSnapshot snapshot = await documentRef.get();
+
+      if (snapshot.exists) {
+        // Document exists, retrieve current values
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        income = (data['total_income'] ?? 0).toDouble();
+        numberOfPassengers = (data['total_passengers'] ?? 0).toInt();
+      }
+
+      // Calculate new totals
+      double newIncome = income + double.parse(widget.amount.toString());
+      int newNumberOfPassengers = numberOfPassengers + 1;
+
+      // Set the document with updated values (or create it if it doesn’t exist)
+      await documentRef.set({
+        'total_income': newIncome,
+        'total_passengers': newNumberOfPassengers,
+      }, SetOptions(merge: true)).then((value) {
+        Navigator.of(context).pop();
+        // QuickAlert.show(context: context, type: type)
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => Ticket(
+                  amount: widget.amount,
+                  busnum: widget.busnum,
+                  companyname: widget.companyname,
+                  current: widget.current,
+                  currentlocc: widget.currentlocc,
+                  destination: widget.destination,
+                  distance: widget.distance,
+                  type: widget.type,
+                  resnum: widget.resnum,
+                )));
+      });
+
+      print('Bus data updated with new income and passenger count.');
+    } catch (e) {
+      print('Error updating bus income: $e');
+    }
+  }
+
   String? presID;
 
   Future<void> updateDocument() async {
     await FirebaseFirestore.instance
         .collection('passengers')
         .doc(FirebaseAuth.instance.currentUser?.uid)
-        .update({
-      'hasreservation': true,
-    }).then((_) async {
+        .update({'hasreservation': true, 'busnum': widget.busnum, 'current_reservation': widget.resnum});
       print("update Successful");
       await FirebaseFirestore.instance
           .collection('passengers')
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('reservations')
-          .doc(presID)
+          .doc()
           .set({
         "reservation_number": widget.resnum,
         "date_and_time": widget.current,
@@ -94,8 +199,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
         "fare": double.parse(widget.amount.toString()),
         "distance_traveled": widget.distance,
         "busnumber": widget.busnum,
-        "bus_company": widget.companyname
+        "bus_company": widget.companyname,
+        "label" : "pending"
       }).then((value) {
+        addCompanyIncome();
         print("Reservation Successful");
         // Navigator.of(context).push(MaterialPageRoute(
         //     builder: (_) => Ticket(
@@ -112,9 +219,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }).catchError((error) {
         print(error.toString());
       });
-    }).catchError((error) {
-      print('Failed to update document: $error');
-    });
   }
 
   Future<void> updateBusData(int avail, int occu, int res) async {
@@ -156,7 +260,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
   }
 
-    Timer? _checkstatustimer;
+  Timer? _checkstatustimer;
 
   void checkpayment() {
     print("clicked");
@@ -175,6 +279,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   void reserve() async {
+    QuickAlert.show(context: context, type: QuickAlertType.loading, title: 'Now Reserving', text: 'Processing your reservation...');
     await FirebaseFirestore.instance
         .collection('companies')
         .doc(widget.companyId)
@@ -190,12 +295,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
       'to': widget.destination,
       'date_time': widget.current,
       'seats_reserved': 1,
-      'accomplished': false
+      'accomplished': false,
+
     }).then((value) {
       updateBusData(seatsavail, occ, reserved);
       updateDocument();
       // Navigator.of(context).pop();
     }).catchError((error) {
+      Navigator.of(context).pop();
+      QuickAlert.show(context: context, type: QuickAlertType.error, title: 'Reservation Error', text: error.message);
       print(error);
     });
   }
@@ -219,7 +327,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
       body: paymentlink != null
           ? WebViewWidget(controller: controller)
-          : const Center(child: CircularProgressIndicator()), 
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 }

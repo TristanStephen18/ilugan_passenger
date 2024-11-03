@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
 class FetchingData {
   Future<String?> getacctype() async {
@@ -55,9 +55,18 @@ class FetchingData {
 
       return data['token'];  
     }
+    // return null;
   }
 
-  // Future<String?> typechecker()async {
+  Future<String?> getidurl()async{
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('passengers').doc(FirebaseAuth.instance.currentUser!.uid).get();
 
-  // }
+    if(snapshot.exists){
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      return data['id'];  
+    }
+
+    // return null;
+  }
 }

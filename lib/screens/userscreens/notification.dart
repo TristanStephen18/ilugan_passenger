@@ -1,22 +1,62 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-class NotificationsPage extends StatelessWidget {
+class NotificationsPage extends StatefulWidget {
+
+  const NotificationsPage({super.key});
+
+  @override
+  State<NotificationsPage> createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    fecthnotifications();
+  }
   // List of notifications
-  final List<Map<String, String>> notifications = [
-    {"title": "Notification 1", "message": "This is the first notification."},
-    {"title": "Notification 2", "message": "This is the second notification."},
-    {"title": "Notification 3", "message": "This is the third notification."},
-    {"title": "Notification 4", "message": "This is the fourth notification."},
-    {"title": "Notification 5", "message": "This is the fifth notification."},
-    {"title": "Notification 6", "message": "This is the sixth notification."},
-    {"title": "Notification 7", "message": "This is the seventh notification."},
+List<Map<String, String>> notifications = [
   ];
+
+  void fecthnotifications() {
+  FirebaseFirestore.instance
+      .collection('passengers')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('notifications')
+      .snapshots()
+      .listen((snapshot) {
+    setState(() {
+      notifications.clear();
+      for (var doc in snapshot.docs) {
+        var data = doc.data();
+        notifications.add({
+          'title': data['title'],
+          'message': data['content'],
+        });
+      }
+    });
+  });
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifications'),
+        // ignore_for_file: avoid_print
+        backgroundColor: Colors.redAccent,
+        title: const Text(
+          'Notifications',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.yellow),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
       ),
       body: ListView.builder(
         itemCount: notifications.length,

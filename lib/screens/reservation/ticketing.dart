@@ -199,6 +199,7 @@ class _TicketScreenState extends State<TicketScreen> {
       int entries = snapshots.docs.length + 1;
       String reservationNumber = entries.toString().padLeft(6, '0');
       resnum = reservationNumber;
+      print('REservation number is: $reservationNumber');
     }
 
     setState(() {});
@@ -229,6 +230,51 @@ class _TicketScreenState extends State<TicketScreen> {
   //     print(error);
   //   });
   // }
+
+  void showwarning() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: TextContent(name: "Attention"),
+          content: TextContent(
+              name:
+                  "Note: This ticket is non-refundable and only valid until the date of purchase."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => PaymentScreen(
+                        amount: widget.amount,
+                        busnum: widget.busnum,
+                        companyId: widget.companyId,
+                        companyname: widget.companyname,
+                        current: widget.current,
+                        currentlocc: widget.currentlocc,
+                        destination: widget.destination,
+                        distance: widget.distance,
+                        paymentId: link.split(" ")[1],
+                        resnum: resnum.toString(),
+                        type: widget.type,
+                        link: link.split(" ")[0])));
+                setState(() {
+                  ispaying = !ispaying;
+                });
+              },
+              child: Text("Confirm"),
+            ),
+            TextButton(
+              onPressed: () {
+                // Handle cancel action
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -373,25 +419,26 @@ class _TicketScreenState extends State<TicketScreen> {
                         const Gap(20),
                         link != ""
                             ? EButtons(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => PaymentScreen(
-                                          amount: widget.amount,
-                                          busnum: widget.busnum,
-                                          companyId: widget.companyId,
-                                          companyname: widget.companyname,
-                                          current: widget.current,
-                                          currentlocc: widget.currentlocc,
-                                          destination: widget.destination,
-                                          distance: widget.distance,
-                                          paymentId: link.split(" ")[1],
-                                          resnum: resnum.toString(),
-                                          type: widget.type,
-                                          link: link.split(" ")[0])));
-                                  setState(() {
-                                    ispaying = !ispaying;
-                                  });
-                                },
+                                onPressed: showwarning,
+                                //  () {
+                                // Navigator.of(context).push(MaterialPageRoute(
+                                //     builder: (_) => PaymentScreen(
+                                //         amount: widget.amount,
+                                //         busnum: widget.busnum,
+                                //         companyId: widget.companyId,
+                                //         companyname: widget.companyname,
+                                //         current: widget.current,
+                                //         currentlocc: widget.currentlocc,
+                                //         destination: widget.destination,
+                                //         distance: widget.distance,
+                                //         paymentId: link.split(" ")[1],
+                                //         resnum: resnum.toString(),
+                                //         type: widget.type,
+                                //         link: link.split(" ")[0])));
+                                // setState(() {
+                                //   ispaying = !ispaying;
+                                // });
+                                // },
                                 name: 'Pay Now',
                                 bcolor: Colors.redAccent,
                                 tcolor: Colors.white,

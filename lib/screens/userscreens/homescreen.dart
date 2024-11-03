@@ -1,10 +1,14 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously, deprecated_member_use
+
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
+import 'package:ilugan_passsenger/monitoring/reservation_monitoring.dart';
 import 'package:ilugan_passsenger/screens/index/landingscreen2.dart';
 import 'package:ilugan_passsenger/screens/userscreens/notification.dart';
 import 'package:ilugan_passsenger/widgets/classes.dart';
@@ -29,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   BitmapDescriptor busmarkers = BitmapDescriptor.defaultMarker;
   Set<Marker> markers = {};
   late GoogleMapController mapController;
+  String? hronbusnum;
 
   @override
   void initState() {
@@ -58,24 +63,28 @@ class _HomeScreenState extends State<HomeScreen> {
       for (var busDoc in busSnapshot.docs) {
         if (!mounted) return; // Check if widget is mounted
 
-        var busData = busDoc.data() as Map<String, dynamic>;
+        var busData = busDoc.data();
         String busNumber = busData['bus_number'] ?? '';
-
-        if (busNumber == 'BUS 1231') {
-          continue;
-        }
 
         String plateNumber = busData['plate_number'] ?? '';
         int availableSeats = busData['available_seats'] ?? 0;
         int occupiedSeats = busData['occupied_seats'] ?? 0;
         int reservedSeats = busData['reserved_seats'] ?? 0;
-        GeoPoint geoPoint = busData['current_location'] ?? GeoPoint(0, 0);
-         GeoPoint geoPointd = busData['destination_coordinates'] ?? GeoPoint(0, 0);
+        GeoPoint geoPoint = busData['current_location'] ?? const GeoPoint(0, 0);
+         GeoPoint geoPointd = busData['destination_coordinates'] ?? const GeoPoint(0, 0);
         LatLng currentLocation = LatLng(geoPoint.latitude, geoPoint.longitude);
         LatLng destinationLocation = LatLng(geoPointd.latitude, geoPointd.longitude);
 
         String address = await ApiCalls()
             .reverseGeocode(currentLocation.latitude, currentLocation.longitude);
+
+        if(hronbusnum != null && hronbusnum == plateNumber && reservationnumber != null){
+          print('Bus Found');
+          print('$hronbusnum is $plateNumber');
+          print(reservationnumber);
+          BusMonitoring().listentobuslocation(companyId, plateNumber, reservationnumber.toString());
+          // BusMonitoring().getFirstReservation();
+        }
 
         if (!mounted) return; // Check again after async operation
 
@@ -111,6 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  String? reservationnumber;
+
   void getemailandusername() {
     String userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -127,7 +138,14 @@ class _HomeScreenState extends State<HomeScreen> {
           email = data['email'];
           username = data['username'];
           hasreservation = data['hasreservation'];
+          hronbusnum = data['busnum'];
+          reservationnumber = data['current_reservation'];
         });
+        if(hasreservation == true && hronbusnum != ""){
+          print("waiting for bus");
+          // ApiCalls().getDistance(, );
+        }
+        print(hronbusnum);
       } else {
         print("Document does not exist");
       }
@@ -140,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
         size: Size(2, 2),
         devicePixelRatio: 1,
       ),
-      "assets/icons/moving_bus_icon.png",
+      "assets/icons/mbus.bmp",
     ).then((icon) {
       if (!mounted) return; // Check if widget is mounted
       setState(() {
@@ -163,6 +181,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return; // Check if widget is mounted
       myloc = LatLng(position.latitude, position.longitude);
       setToLocation(myloc);
+      if(hasreservation == true && hronbusnum != null){
+        print('Waiting for bus arrival');
+      }
     });
   }
 

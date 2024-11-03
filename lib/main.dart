@@ -1,23 +1,10 @@
 import 'package:email_otp/email_otp.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ilugan_passsenger/notifications/model.dart';
 import 'package:ilugan_passsenger/screens/index/splashscreen.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/authentication/chooseaccounttype.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/authentication/idpic.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/reservation/paymongopayment.dart';
-// import 'package:ilugan_passenger_mobile_app/otp_trial/sendotp.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen2.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/reservation/selectdestination.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/reservation/ticketing.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/userscreens/busschedules.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/userscreens/profile.dart';
-// import 'package:ilugan_passenger_mobile_app/trial/psgc.dart';
+// import 'package:ilugan_passsenger/trial/notificationstrial.dart';
 import 'firebase_options.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/index/splashscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +13,7 @@ void main() async {
     otpType: OTPType.numeric,
     emailTheme: EmailTheme.v1,
   );
+  Notif.initializenotifications();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

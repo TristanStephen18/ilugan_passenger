@@ -9,6 +9,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:gap/gap.dart';
+import 'package:ilugan_passsenger/notifications/model.dart';
 import 'package:ilugan_passsenger/screens/authentication/loginscreen.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
@@ -79,13 +80,12 @@ class _EmailVeficationScreenState extends State<EmailVeficationScreen> {
           'phonenumber': "",
           'bus' : "",
           'type': '',
-          'token' : fcmtoken
         });
 
         // User? user = usercred.user;
 
         Navigator.of(context).pop();
-
+        Notif().successverificationnotification();
         QuickAlert.show(
             context: context,
             type: QuickAlertType.success,

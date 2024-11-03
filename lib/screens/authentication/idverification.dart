@@ -5,11 +5,16 @@ import 'dart:io';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:ilugan_passsenger/notifications/model.dart';
+import 'package:ilugan_passsenger/screens/authentication/idpic.dart';
+import 'package:ilugan_passsenger/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
+import 'package:quickalert/quickalert.dart';
 // import 'package:ilugan_passenger_mobile_app/firebase_helpers/fetching.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
@@ -235,33 +240,61 @@ class _AdminVerificationState extends State<AdminVerification> {
     isAccepted(FirebaseAuth.instance.currentUser!.email.toString());
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void isAccepted(String email) {
   FirebaseFirestore.instance
-      .collection('requests')
+      .collection('admin_requests')
       .doc(email)
       .snapshots()
       .listen((DocumentSnapshot snapshots) async {
     print('Firestore listener triggered');  // Debug print
-    print(email);
+    print('Checking document for email: $email');
 
     if (snapshots.exists) {
       print('Document exists');  // Debug print
       var data = snapshots.data() as Map<String, dynamic>;
       bool status = data['accepted'];
       String imagelocation = data['imagelocation'];
-      print('isaccepted value: $status');  // Debug print for isaccepted
+      String reason = data['reason'];
+      String state = data['status'];
+      
+      print('isAccepted value: $status');
+      print('Document state: $state');
+      print('Rejection reason: $reason');
 
       if (status) {
-        await FirebaseFirestore.instance.collection('passengers').doc(FirebaseAuth.instance.currentUser!.uid).update({
-          'id' : imagelocation
+        await FirebaseFirestore.instance
+            .collection('passengers')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({
+          'id': imagelocation,
+          'type': widget.type
         });
-
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.confirm,
+          title: 'ID verification complete',
+          text: 'You can now use Ilugan',
+          onConfirmBtnTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomeScreen()));
+          },
+          showConfirmBtn: true,
+        );
+      } else if (reason != '') {
+        print('State is rejected. Triggering rejection notification');
+        Notif().verificationnotification(reason, state);
+        Navigator.of(context).push(MaterialPageRoute(builder: (_)=> PhotoIdScreen(type: widget.type)));
       }
     } else {
       print('Document does not exist');  // Debug print
     }
   });
 }
+
 
 
   @override

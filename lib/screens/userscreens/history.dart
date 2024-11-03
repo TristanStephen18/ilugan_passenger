@@ -1,6 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ilugan_passsenger/screens/userscreens/historyviewer.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/userscreens/ticketview.dart';
 import 'package:ilugan_passsenger/screens/userscreens/ticketview.dart';
 import 'package:intl/intl.dart';
@@ -157,6 +160,9 @@ class _ReservationListState extends State<ReservationList> {
                 itemBuilder: (context, index) {
                   var reservation = reservationDocs[index];
                   Timestamp timestamp = reservation['date_and_time'];
+                  DateTime currentdate = DateTime.now();
+                  String today = DateFormat('yyyy-MM-dd').format(currentdate);
+                  print(today);
                   String formattedDate = formatDate(timestamp);
 
                   return Card(
@@ -192,17 +198,18 @@ class _ReservationListState extends State<ReservationList> {
                       ),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => TicketView(
-                            amount: reservation['fare'].toString(),
-                            busnum: reservation['busnumber'],
-                            companyname: reservation['bus_company'],
-                            currentlocc: reservation['from'],
-                            date: reservation['date_and_time'].toDate(),
-                            distance: reservation['distance_traveled'],
-                            destination: reservation['to'],
-                            resnum: reservation['reservation_number'],
-                            type: acctype.toString(),
-                          )));
+                      builder: (_) => ViewHistory(buscomp: reservation['bus_company'], busnum: reservation['busnumber'], date: reservation['date_and_time'].toDate(), distance: reservation['distance_traveled'], end: reservation['to'], start: reservation['from'], )));
+                      // TicketView(
+                      //       amount: reservation['fare'].toString(),
+                      //       busnum: reservation['busnumber'],
+                      //       companyname: reservation['bus_company'],
+                      //       currentlocc: reservation['from'],
+                      //       date: reservation['date_and_time'].toDate(),
+                      //       distance: reservation['distance_traveled'],
+                      //       destination: reservation['to'],
+                      //       resnum: reservation['reservation_number'],
+                      //       type: acctype.toString(),
+                      //     )));
                       },
                     ),
                   );

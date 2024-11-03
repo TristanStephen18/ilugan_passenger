@@ -80,7 +80,7 @@ class TextContent extends StatelessWidget {
       required this.name,
       this.fontsize,
       this.fontweight,
-      this.fcolor});
+      this.fcolor,});
 
   final String name;
   double? fontsize = 0;

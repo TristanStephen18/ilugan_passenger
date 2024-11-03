@@ -30,6 +30,7 @@ class ApiCalls {
  Future<LatLng?> getCoordinates(String address) async {
   final String encodedAddress = Uri.encodeComponent(address);
   LatLng? coordinates;
+  print('fetching response from api');
 
   final String url =
       "https://us1.locationiq.com/v1/search?key=${apiKey}&q=${encodedAddress}&format=json";
@@ -47,6 +48,7 @@ class ApiCalls {
           double.parse(firstResult['lat']),
           double.parse(firstResult['lon']),
         );
+        print(coordinates);
         return coordinates;
       } else {
         print("No results found for the address.");
@@ -174,7 +176,7 @@ Future<String?> createPayMongoPaymentLink(double amount) async {
   final headers = {
     'accept': 'application/json',
     'content-type': 'application/json',
-    'authorization': 'Basic c2tfdGVzdF9YVmZ1c0ZMeldMZ1c3TXFGS3g5RGgyRks6',
+    'authorization': 'Basic c2tfdGVzdF81Z1VZeEx3WHBLcGdaQWdtRnNWWDlQUjQ6',
   };
 
   final body = json.encode({
@@ -213,7 +215,7 @@ Future<String?> checkpaymentstatus(String paymentId) async {
           Uri.parse("https://api.paymongo.com/v1/links/$paymentId"),
           headers: {
             'Accept': 'application/json',
-            'Authorization': 'Basic c2tfdGVzdF9YVmZ1c0ZMeldMZ1c3TXFGS3g5RGgyRks6',
+            'Authorization': 'Basic c2tfdGVzdF81Z1VZeEx3WHBLcGdaQWdtRnNWWDlQUjQ6',
           },
         );
 
@@ -238,7 +240,7 @@ Future<String> fetchPolyline(LatLng origin, LatLng destination) async {
 
   // Build the HERE API URL with the origin and destination
   final String url =
-      'https://router.hereapi.com/v8/routes?transportMode=car&return=polyline,summary&origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&via=52.52426,13.43000&apiKey=$apiKey';
+      'https://router.hereapi.com/v8/routes?transportMode=car&return=polyline,summary&origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&apiKey=$apiKey';
 
   // Send the GET request
   final response = await http.get(Uri.parse(url));

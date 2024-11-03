@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:ilugan_passsenger/firebase_helpers/fetching.dart';
+import 'package:ilugan_passsenger/screens/authentication/idverification.dart';
 // import 'package:ilugan_passsenger/screens/authentication/idverification.dart';
 // import 'package:ilugan_passsenger/screens/authentication/signup_fordiscounted.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
@@ -33,6 +34,11 @@ class _PhotoIdScreenState extends State<PhotoIdScreen> {
   void initState() {
     super.initState();
     gettoken();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void gettoken() async {
@@ -93,9 +99,10 @@ class _PhotoIdScreenState extends State<PhotoIdScreen> {
         'imagelocation': downloadURL,
         'accepted': false,
         'status' : 'pending',
-        'token' : fcmtoken
+        'reason': ""
       });
       Navigator.of(context).pop();
+      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>AdminVerification(idimage: _imageFile as File, type: widget.type,)));
     } else {
       print('No file selected');
     }
@@ -182,9 +189,7 @@ class _PhotoIdScreenState extends State<PhotoIdScreen> {
       // Only show 'Next' button if an image is selected
       floatingActionButton: _imageFile != null
           ? FloatingActionButton.extended(
-              onPressed: () {
-                // Navigator.of(context).push(MaterialPageRoute(builder: (_)=>AdminVerification(idimage: _imageFile as File, type: widget.type,)));
-              },
+              onPressed: uploadIdToStorage,
               label: const Text('Next'),
               icon: const Icon(Icons.arrow_forward),
               backgroundColor: Colors.blueAccent,
