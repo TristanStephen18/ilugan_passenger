@@ -85,7 +85,7 @@ class _EmailVeficationScreenState extends State<EmailVeficationScreen> {
         // User? user = usercred.user;
 
         Navigator.of(context).pop();
-        Notif().successverificationnotification();
+        Notif().accountcreationnotification();
         QuickAlert.show(
             context: context,
             type: QuickAlertType.success,

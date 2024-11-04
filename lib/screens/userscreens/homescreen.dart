@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart';
+// import 'package:http/http.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
 import 'package:ilugan_passsenger/monitoring/reservation_monitoring.dart';
 import 'package:ilugan_passsenger/screens/index/landingscreen2.dart';
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
               markerId: MarkerId(busNumber),
               position: currentLocation,
               onTap: () {
-                DisplayItems().showbusinfo(
+                DisplayItems().showBusInfoDialog(
                     context,
                     'Dagupan Bus Inc.',
                     busNumber,

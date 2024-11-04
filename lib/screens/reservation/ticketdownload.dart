@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
+import 'package:ilugan_passsenger/notifications/model.dart';
 import 'package:ilugan_passsenger/screens/userscreens/homescreen.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 // import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
@@ -46,6 +47,12 @@ class Ticket extends StatefulWidget {
 }
 
 class _TicketState extends State<Ticket> {
+
+  @override
+  void initState() {
+    super.initState();
+    Notif().reservationnotification(widget.busnum, widget.companyname, widget.resnum);
+  }
   // void _downloadImage() async {
   //   try {
   //     RenderRepaintBoundary? boundary = _repaintkey.currentContext

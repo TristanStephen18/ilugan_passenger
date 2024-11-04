@@ -274,6 +274,7 @@ class _AdminVerificationState extends State<AdminVerification> {
           'id': imagelocation,
           'type': widget.type
         });
+        Notif().successverificationnotification();
         QuickAlert.show(
           context: context,
           type: QuickAlertType.confirm,

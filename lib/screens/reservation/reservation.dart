@@ -124,7 +124,7 @@ class _SeatReservationScreenState extends State<SeatReservationScreen> {
       type = response;
     });
 
-    amountCalculator(type.toString());
+    discounter(type.toString());
   }
 
   void getAmount(String distance) {
@@ -137,10 +137,11 @@ class _SeatReservationScreenState extends State<SeatReservationScreen> {
       amount = (48 + ((val - 30) * 2)).toStringAsFixed(2);
       original = double.parse(amount.toString());
     }
-    amountCalculator(type.toString());
+    discounter(type.toString());
   }
 
-  void amountCalculator(String type) {
+  void discounter(String type) {
+    print(original);
     // double original = double.parse(amount.toString());
     if (type == "Regular") {
         amount = original!.toStringAsFixed(2);
@@ -148,7 +149,13 @@ class _SeatReservationScreenState extends State<SeatReservationScreen> {
       if(original! <= 48){
          amount = original?.toStringAsFixed(2);
       }else{
+        print((original! * 0.80));
+        if((original! * 0.80) < 48){
+          amount = (48.00).toStringAsFixed(2);
+        }else{
         amount = (original! * 0.80).toStringAsFixed(2);
+        }
+        
       }
     }
     setState(() {

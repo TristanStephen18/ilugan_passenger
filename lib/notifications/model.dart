@@ -28,7 +28,7 @@ class Notif{
   String formattedDate = DateFormat('MMMM d, y - h:mm a').format(now);
   AwesomeNotifications().createNotification(
     content: NotificationContent(
-      id: 13, // A unique ID for this notification
+      id: 19, // A unique ID for this notification
       channelKey: 'ilugan_notif', // Channel should match the one initialized
       title: 'Your ID verification has failed',
       body: title,
@@ -58,9 +58,9 @@ void successverificationnotification() {
     ),
   ).then((val) async {
     await FirebaseFirestore.instance.collection('passengers').doc(FirebaseAuth.instance.currentUser!.uid).collection('notifications').doc().set({
-      'content': 'Your ID verification has failed',
+      'content': 'Your ID has been successfully verified',
       'dateNtime': now,
-      'title': 'Failed ID verification',
+      'title': 'ID verified',
     });
   });
 }
@@ -87,5 +87,30 @@ void successverificationnotification() {
     });
   });
 }
+
+
+void reservationnotification(String busnum, String companyname, String resnum) {
+    // String accountcreationtime = DateFormat()
+  // print('Creating notification with title: $title and status: $status'); // Debugging print
+  DateTime now = DateTime.now();
+  // String formattedDate = DateFormat('MMMM d, y - h:mm a').format(now);
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 12, // A unique ID for this notification
+      channelKey: 'ilugan_notif', // Channel should match the one initialized
+      title: 'Reservation Successful',
+      body: 'You have reserved a seat at $companyname: $busnum with the reservation number of $resnum',
+      notificationLayout: NotificationLayout.Default,
+      // icon: 'assets/images/logo/logo.png'
+    ),
+  ).then((val) async {
+    await FirebaseFirestore.instance.collection('passengers').doc(FirebaseAuth.instance.currentUser!.uid).collection('notifications').doc().set({
+      'content': 'You have reserved a seat at $companyname: $busnum with the reservation number of $resnum',
+      'dateNtime': now,
+      'title': 'Reservation Successful',
+    });
+  });
+}
+
 
 }
