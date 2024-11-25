@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:http/http.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
+import 'package:ilugan_passsenger/firebase_helpers/account.dart';
 import 'package:ilugan_passsenger/monitoring/reservation_monitoring.dart';
 import 'package:ilugan_passsenger/screens/index/landingscreen2.dart';
 import 'package:ilugan_passsenger/screens/userscreens/notification.dart';
@@ -224,7 +225,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void logout() async {
+    Account().setstatus(FirebaseAuth.instance.currentUser!.uid, 'logout');
     await FirebaseAuth.instance.signOut();
+    // Account().setstatus(Fireba, option)
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => LandingScreen2()),
     );

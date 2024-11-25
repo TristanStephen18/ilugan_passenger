@@ -20,7 +20,7 @@ class SplashScreen extends StatelessWidget {
       splash:  const Center(
         child: Image(
                     image: AssetImage(
-                      "assets/images/logo/logo.png",
+                      "assets/images/logo/logo1.png",
                     ),
         ),
       ),

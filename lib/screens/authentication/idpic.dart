@@ -112,8 +112,27 @@ class _PhotoIdScreenState extends State<PhotoIdScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload ID Photo'),
         backgroundColor: Colors.redAccent,
+        centerTitle: true,
+        toolbarHeight: 60,
+        title:TextContent(name: 'ID upload', fontsize: 
+        30, fcolor: Colors.white, fontweight: FontWeight.w500,),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.yellow,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: const [
+          Image(
+            image: AssetImage("assets/images/logo/logo.png"),
+            height: 50,
+            width: 50,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),

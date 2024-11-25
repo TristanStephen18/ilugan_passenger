@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously, unused_element
 
-import 'dart:typed_data';
+// import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 // import 'dart:io';
@@ -133,9 +133,9 @@ class _TicketState extends State<Ticket> {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.white,
                   ),
-                  height: MediaQuery.sizeOf(context).height / 1.4,
+                  height: MediaQuery.sizeOf(context).height/1.2,
                   child: Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: Column(
                       children: [
                         const Gap(10),
@@ -187,10 +187,10 @@ class _TicketState extends State<Ticket> {
                           fontsize: 15,
                           fontweight: FontWeight.bold,
                         ),
-                        const Gap(20),
+                        const Gap(40),
                         QrImageView(
                           data: widget.resnum,
-                          size: 200,
+                          size: 270,
                         ),
                         const Gap(20),
                       ],

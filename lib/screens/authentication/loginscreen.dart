@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
+import 'package:ilugan_passsenger/firebase_helpers/account.dart';
+import 'package:ilugan_passsenger/notifications/model.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/authentication/chooseaccounttype.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
@@ -16,13 +18,20 @@ import 'package:ilugan_passsenger/widgets/widgets.dart';
 import 'package:quickalert/quickalert.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Notif().requestNotificationPermissions(context);
+  }
 
   final formkey = GlobalKey<FormState>();
 
@@ -34,11 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
     QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Logging you in", title: "ILugan");
     await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcon.text, 
     password: passcon.text).then((UserCredential cred) async{
+      Account().setstatus(cred.user!.uid, 'login');
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const TypeCheckerScreen()));
     }).catchError((error){
       Navigator.of(context).pop();
-      QuickAlert.show(context: context, type: QuickAlertType.error, text: error.message.toString(), title: "OOOOpppss");
+      print(error.code);
+      QuickAlert.show(context: context, type: QuickAlertType.error, text: error.message.toString(), title: "Oooopppss");
     });
   }else{
     return;

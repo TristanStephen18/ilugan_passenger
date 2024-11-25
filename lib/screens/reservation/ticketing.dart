@@ -304,7 +304,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.white),
-                  height: MediaQuery.sizeOf(context).height - 35,
+                  height: MediaQuery.sizeOf(context).height,
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
@@ -416,7 +416,7 @@ class _TicketScreenState extends State<TicketScreen> {
                             fontweight: FontWeight.bold,
                           ),
                         ),
-                        const Gap(20),
+                        const Gap(10),
                         link != ""
                             ? EButtons(
                                 onPressed: showwarning,

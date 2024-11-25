@@ -50,8 +50,8 @@ class DisplayItems {
                 Row(
                   children: [
                     const Image(
-                      height: 100,
-                      width: 150,
+                      height: 80,
+                      width: 100,
                       image: AssetImage('assets/icons/dagupan_bus.png'),
                       fit: BoxFit.cover,
                     ),
@@ -60,9 +60,9 @@ class DisplayItems {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          buscompany,
+                          buscompany.toUpperCase(),
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
@@ -70,8 +70,8 @@ class DisplayItems {
                         Text(
                           busnumber,
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
                         ),
@@ -147,7 +147,7 @@ class DisplayItems {
                 Text(
                   'Seating Info',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -210,7 +210,7 @@ class DisplayItems {
                           ? 'STANDING/FULLY OCCUPIED'
                           : 'RESERVE A SEAT',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -238,8 +238,8 @@ Widget _buildSeatInfoColumn(String label, int count, Color color) {
       ),
       const SizedBox(height: 5),
       Container(
-        height: 70,
-        width: 70,
+        height: 60,
+        width: 60,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(10),
@@ -248,7 +248,7 @@ Widget _buildSeatInfoColumn(String label, int count, Color color) {
           child: Text(
             count.toString(),
             style: TextStyle(
-              fontSize: 30,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),

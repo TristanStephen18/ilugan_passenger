@@ -85,6 +85,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void addCompanyIncome() async {
     double income = 0;
     int numberOfPassengers = 0;
+    int numberofreservations = 0;
 
     // Reference to the document you want to update
     DocumentReference documentRef = FirebaseFirestore.instance
@@ -102,16 +103,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
         income = (data['total_income'] ?? 0).toDouble();
         numberOfPassengers = (data['total_passengers'] ?? 0).toInt();
+        numberofreservations = (data['total_reservations'] ?? 0).toInt();
       }
 
       // Calculate new totals
       double newIncome = income + double.parse(widget.amount.toString());
       int newNumberOfPassengers = numberOfPassengers + 1;
+      int newnumberofReservations = numberofreservations + 1;
 
       // Set the document with updated values (or create it if it doesn’t exist)
       await documentRef.set({
         'total_income': newIncome,
         'total_passengers': newNumberOfPassengers,
+        'total_reservations': newnumberofReservations
       }, SetOptions(merge: true)).then((value) {
         addBusIncome();
       });
@@ -125,6 +129,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void addBusIncome() async {
     double income = 0;
     int numberOfPassengers = 0;
+    int numberofreservations = 0;
 
     // Reference to the document you want to update
     DocumentReference documentRef = FirebaseFirestore.instance
@@ -145,16 +150,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
         income = (data['total_income'] ?? 0).toDouble();
         numberOfPassengers = (data['total_passengers'] ?? 0).toInt();
+        numberofreservations = (data['total_reservation'] ?? 0).toInt();
+        
       }
 
       // Calculate new totals
       double newIncome = income + double.parse(widget.amount.toString());
       int newNumberOfPassengers = numberOfPassengers + 1;
+      int newnumberofreservations = numberofreservations + 1;
 
       // Set the document with updated values (or create it if it doesn’t exist)
       await documentRef.set({
         'total_income': newIncome,
         'total_passengers': newNumberOfPassengers,
+        'total_reservation' : newnumberofreservations
       }, SetOptions(merge: true)).then((value) {
         Navigator.of(context).pop();
         // QuickAlert.show(context: context, type: type)
@@ -204,18 +213,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }).then((value) {
         addCompanyIncome();
         print("Reservation Successful");
-        // Navigator.of(context).push(MaterialPageRoute(
-        //     builder: (_) => Ticket(
-        //           amount: widget.amount,
-        //           busnum: widget.busnum,
-        //           companyname: widget.companyname,
-        //           current: widget.current,
-        //           currentlocc: widget.currentlocc,
-        //           destination: widget.destination,
-        //           distance: widget.distance,
-        //           type: widget.type,
-        //           resnum: widget.resnum,
-        //         )));
       }).catchError((error) {
         print(error.toString());
       });
@@ -252,7 +249,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           seatsavail = data['available_seats'];
           occ = data['occupied_seats'];
           reserved = data['reserved_seats'];
-          // conductorname = data['conductor'];
         });
       } else {
         print('Unable to find data');

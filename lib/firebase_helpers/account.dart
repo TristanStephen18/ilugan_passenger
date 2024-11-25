@@ -20,4 +20,22 @@ class Account {
       // QuickAlert.show(context: , type: type)
     });
   }
+
+  void setstatus(String uid, String option)async{
+   if(option == 'login'){
+     await FirebaseFirestore.instance.collection('passengers').doc(uid).update({
+      'status': 'online'
+    });
+   }else if(option == 'logout'){
+     await FirebaseFirestore.instance.collection('passengers').doc(uid).update({
+      'status': 'offline'
+    });
+   }
+  }
+}
+
+class ReservationHelper{
+  void checkforexpiredticket(){
+    
+  }
 }

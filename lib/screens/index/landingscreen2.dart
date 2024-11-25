@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:gap/gap.dart';
@@ -22,21 +24,8 @@ class _LandingScreen2State extends State<LandingScreen2> {
       backgroundColor: Colors.redAccent,
       body: Column(
         children: [
-          // ILUgan Logo and Text
-          Padding(
-            padding: EdgeInsets.only(top: 50.0, left: MediaQuery.sizeOf(context).width/4),
-            child: Row(
-              children: [
-                Image.asset('assets/images/logo/logo.png', height: 100),
-                // SizedBox(height: 10),
-                TextContent(
-                  name: 'Ilugan',
-                  fontsize: 40,
-                  fontweight: FontWeight.w500,
-                )
-              ],
-            ),
-          ),
+          const Spacer(),
+          Center(child: TextContent(name: 'iLugan', fcolor: Colors.white, fontsize: 70,),),
 
           // Carousel Slider
           Padding(

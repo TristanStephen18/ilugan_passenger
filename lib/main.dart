@@ -13,7 +13,7 @@ void main() async {
     otpType: OTPType.numeric,
     emailTheme: EmailTheme.v1,
   );
-  Notif.initializenotifications();
+  await Notif.initializenotifications();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

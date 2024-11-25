@@ -39,7 +39,7 @@ class BusMonitoring {
               locationcoordinates);
           print(distance);
           print('Distance label: ${distance.toString().split(' ')[1]}');
-          if (distance.toString().split(' ')[0] == '1' &&
+          if (double.parse(distance.toString().split(' ')[0]) <= 3 &&
               distance.toString().split(' ')[1] == 'm') {
             print('bus has arrived at pick up location');
             busArrivalNotifications(
@@ -51,7 +51,7 @@ class BusMonitoring {
             busArrivalNotifications('is arriving at $location', busnum,
                 'Be ready for your reservation\nThank you!');
           }
-          if (double.parse(distance.toString().split(' ')[0]) <= 999 &&
+          if (double.parse(distance.toString().split(' ')[0]) <= 999 && double.parse(distance.toString().split(' ')[0]) >= 4  &&
               distance.toString().split(' ')[1] == 'm') {
             busArrivalNotifications('is getting closer to $location', busnum,
                 'Be ready for your reservation\nThank you!');
