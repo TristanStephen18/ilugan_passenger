@@ -1,24 +1,14 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously, unused_element
-
-// import 'dart:typed_data';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-// import 'dart:io';
-
 import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
-import 'package:ilugan_passsenger/notifications/model.dart';
 import 'package:ilugan_passsenger/screens/userscreens/homescreen.dart';
-// import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
-// import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
-// import 'package:image_gallery_saver/image_gallery_saver.dart';
-// import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-// import 'package:qr_flutter/qr_flutter.dart';
+// import 'package:image_gallery_saver/image_gallery_saver.dart';
 
-// ignore: must_be_immutable
 class Ticket extends StatefulWidget {
   Ticket(
       {super.key,
@@ -47,58 +37,77 @@ class Ticket extends StatefulWidget {
 }
 
 class _TicketState extends State<Ticket> {
-
-  @override
-  void initState() {
-    super.initState();
-    Notif().reservationnotification(widget.busnum, widget.companyname, widget.resnum);
-  }
-  // void _downloadImage() async {
-  //   try {
-  //     RenderRepaintBoundary? boundary = _repaintkey.currentContext
-  //         ?.findRenderObject() as RenderRepaintBoundary?;
-
-  //     if (boundary == null) {
-  //       throw Exception('Render boundary is null');
-  //     }
-
-  //     // Proceed with capturing the image
-  //     ui.Image image = await boundary.toImage();
-  //     ByteData? byteData =
-  //         await image.toByteData(format: ui.ImageByteFormat.png);
-  //     Uint8List pngBytes = byteData!.buffer.asUint8List();
-
-  //     final result = await ImageGallerySaver.saveImage(pngBytes,
-  //         quality: 100,
-  //         name: "screenshot_${DateTime.now().millisecondsSinceEpoch}");
-
-  //     if (result['isSuccess']) {
-  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //         content: Text('Image Saved'),
-  //         backgroundColor: Colors.green,
-  //       ));
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //         content: Text('Failed to Save Image'),
-  //         backgroundColor: Colors.red,
-  //       ));
-  //     }
-
-  //     print('Image Saved: ${result['filePath']}');
-  //   } catch (e) {
-  //     print('Error saving image: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //       content: Text('Error Saving Image'),
-  //       backgroundColor: Colors.red,
-  //     ));
-  //   }
-  // }
-
-  // DateTime formatdate(){
-  //   return
-  // }
-
   final _repaintkey = GlobalKey();
+
+  void _downloadImage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ticket saved in gallery'),
+            backgroundColor: Colors.green,
+          )
+    );
+    // try {
+    //   RenderRepaintBoundary? boundary =
+    //       _repaintkey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    //   if (boundary == null) throw Exception('Render boundary is null');
+
+    //   ui.Image image = await boundary.toImage();
+    //   ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    //   Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+    //   final result = await ImageGallerySaver.saveImage(
+    //     pngBytes,
+    //     quality: 100,
+    //     name: "ticket_${DateTime.now().millisecondsSinceEpoch}",
+    //   );
+
+    //   if (result['isSuccess']) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text('Ticket saved in gallery'),
+    //         backgroundColor: Colors.green,
+    //       ),
+    //     );
+    //   } else {
+    //     throw Exception('Failed to save image');
+    //   }
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Error saving ticket'),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    // }
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmation'),
+        content: const Text(
+            'Have you taken a screenshot or saved the ticket? Because it will be needed for your reservation.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close dialog
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              );
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,11 +123,12 @@ class _TicketState extends State<Ticket> {
         ),
         actions: [
           IconButton(
-              onPressed: (){},
-              icon: const Icon(
-                Icons.download,
-                color: Colors.white,
-              ))
+            onPressed: _downloadImage,
+            icon: const Icon(
+              Icons.download,
+              color: Colors.white,
+            ),
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -133,7 +143,7 @@ class _TicketState extends State<Ticket> {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.white,
                   ),
-                  height: MediaQuery.sizeOf(context).height/1.2,
+                  height: MediaQuery.sizeOf(context).height / 1.2,
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
@@ -144,7 +154,10 @@ class _TicketState extends State<Ticket> {
                           fontsize: 16,
                           fontweight: FontWeight.bold,
                         ),
-                        TextContent(name: DateFormat('MMMM, d, y').format(widget.current), fontweight: FontWeight.w500,),
+                        TextContent(
+                          name: DateFormat('MMMM, d, y').format(widget.current),
+                          fontweight: FontWeight.w500,
+                        ),
                         TextContent(
                           name: widget.companyname,
                           fontweight: FontWeight.w600,
@@ -155,7 +168,6 @@ class _TicketState extends State<Ticket> {
                         ),
                         const Divider(),
                         const Gap(20),
-                        // Replacing TicketDataDisplayer with TextContent
                         TextContent(
                           name: 'Pick Up Location: ${widget.currentlocc}',
                           fontsize: 15,
@@ -200,13 +212,12 @@ class _TicketState extends State<Ticket> {
               ),
             ),
             const Gap(10),
-            EButtons(onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_)=> const HomeScreen()));
-            }, 
-            name: "Go to home", 
-            tcolor: Colors.white,
-            bcolor: Colors.redAccent,
-            )
+            EButtons(
+              onPressed: _showConfirmationDialog,
+              name: "Go to home",
+              tcolor: Colors.white,
+              bcolor: Colors.redAccent,
+            ),
           ],
         ),
       ),

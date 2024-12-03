@@ -103,7 +103,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
         income = (data['total_income'] ?? 0).toDouble();
         numberOfPassengers = (data['total_passengers'] ?? 0).toInt();
-        numberofreservations = (data['total_reservations'] ?? 0).toInt();
+        numberofreservations = (data['total_reservation'] ?? 0).toInt();
       }
 
       // Calculate new totals
@@ -115,7 +115,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       await documentRef.set({
         'total_income': newIncome,
         'total_passengers': newNumberOfPassengers,
-        'total_reservations': newnumberofReservations
+        'total_reservation': newnumberofReservations
       }, SetOptions(merge: true)).then((value) {
         addBusIncome();
       });
@@ -150,7 +150,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
         income = (data['total_income'] ?? 0).toDouble();
         numberOfPassengers = (data['total_passengers'] ?? 0).toInt();
-        numberofreservations = (data['total_reservation'] ?? 0).toInt();
+        numberofreservations = (data['total_reservations'] ?? 0).toInt();
         
       }
 
@@ -163,7 +163,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       await documentRef.set({
         'total_income': newIncome,
         'total_passengers': newNumberOfPassengers,
-        'total_reservation' : newnumberofreservations
+        'total_reservations' : newnumberofreservations
       }, SetOptions(merge: true)).then((value) {
         Navigator.of(context).pop();
         // QuickAlert.show(context: context, type: type)
