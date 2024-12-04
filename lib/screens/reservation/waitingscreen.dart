@@ -29,6 +29,7 @@ class _WaitingForAcceptanceScreenState extends State<WaitingForAcceptanceScreen>
 
   void createpaymentlink() async {
     String? paymentlink;
+    print('sample');
     if(widget.amount < 100){
       print('less than 10 ${widget.amount * 10}');
     paymentlink =
