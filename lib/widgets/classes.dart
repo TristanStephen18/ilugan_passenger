@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ilugan_passsenger/screens/reservation/reservationquantitychooser.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/reservation/reservation.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/reservation/selectdestination.dart';
 // import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:ilugan_passsenger/screens/reservation/selectdestination.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
+// import 'package:ilugan_passsenger/widgets/widgets.dart';
 import 'package:status_alert/status_alert.dart';
 
 class DisplayItems {
@@ -25,6 +27,10 @@ class DisplayItems {
   bool hasreservation,
   LatLng destinationcoordinates,
   LatLng buslocation,
+  String from,
+  String to,
+  String via,
+  String bustype
 ) {
   showDialog(
     context: context,
@@ -75,6 +81,7 @@ class DisplayItems {
                             color: Colors.black,
                           ),
                         ),
+                        TextContent(name: bustype)
                       ],
                     )
                   ],
@@ -90,7 +97,7 @@ class DisplayItems {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  currentlocation,
+                  '${currentlocation.substring(0, 50)}...',
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.black,
@@ -110,9 +117,9 @@ class DisplayItems {
                   children: [
                     Column(
                       children: [
-                        Icon(Icons.directions, color: Colors.black),
+                        Icon(Icons.drive_eta, color: Colors.black),
                         Text(
-                          'Cubao',
+                          from,
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -133,7 +140,7 @@ class DisplayItems {
                       children: [
                         Icon(Icons.location_on, color: Colors.black),
                         Text(
-                          'Dagupan',
+                          to,
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -143,6 +150,9 @@ class DisplayItems {
                     ),
                   ],
                 ),
+                Text('VIA: $via', style: TextStyle(
+                  fontWeight: FontWeight.bold
+                ),),
                 const SizedBox(height: 20),
                 Text(
                   'Seating Info',
@@ -186,16 +196,17 @@ class DisplayItems {
                           duration: const Duration(seconds: 1),
                         );
                       } else {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => SelectLocationScreen(
-                            companyId: companyId,
-                            compName: buscompany,
-                            busnum: platenumber,
-                            currentloc: currentloc,
-                            destinationloc: destinationcoordinates,
-                            currentlocation: buslocation,
-                          ),
-                        ));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ReservationChoiceScreen(busnum: busnumber, compName: buscompany, companyId: companyId, currentlocation: currentloc, via: via, bustype: bustype,)));
+                        // Navigator.of(context).push(MaterialPageRoute(
+                        //   builder: (_) => SelectLocationScreen(
+                        //     companyId: companyId,
+                        //     compName: buscompany,
+                        //     busnum: platenumber,
+                        //     currentloc: currentloc,
+                        //     destinationloc: destinationcoordinates,
+                        //     currentlocation: buslocation,
+                        //   ),
+                        // ));
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -208,7 +219,7 @@ class DisplayItems {
                     child: Text(
                       availableseats == 0
                           ? 'STANDING/FULLY OCCUPIED'
-                          : 'RESERVE A SEAT',
+                          : 'BOOK NOW',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,

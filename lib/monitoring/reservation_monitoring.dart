@@ -16,7 +16,7 @@ class BusMonitoring {
 
     if(location != null){
       LatLng? locationcoordinates =
-        await ApiCalls().getCoordinates(location as String);
+        await ApiCalls().getCoordinates(location.toString());
 
     print("Location: $location and Location Coordinates: $locationcoordinates");
 

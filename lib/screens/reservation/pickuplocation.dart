@@ -4,36 +4,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
-import 'package:ilugan_passsenger/screens/reservation/reservation.dart';
-import 'package:ilugan_passsenger/screens/reservation/reservationdetailsinput.dart';
+import 'package:ilugan_passsenger/screens/reservation/selectdestination.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
 
-class SelectLocationScreen extends StatefulWidget {
-  SelectLocationScreen({
+class SelectPickUpLocationScreen extends StatefulWidget {
+  SelectPickUpLocationScreen({
     super.key,
     required this.companyId,
     required this.compName,
     required this.busnum,
-    required this.pickupaddress,
-    required this.pickupcoordinates,
+    required this.via,
     required this.seatQuantity,
-    required this.bustype,
+    required this.bustype
   });
 
   final String companyId;
   final String compName;
   final String busnum;
-  final String pickupaddress;
-  final LatLng pickupcoordinates;
+  final String via;
   final int seatQuantity;
   final String bustype;
 
-
   @override
-  _SelectLocationScreenState createState() => _SelectLocationScreenState();
+  _SelectPickUpLocationScreenState createState() =>
+      _SelectPickUpLocationScreenState();
 }
 
-class _SelectLocationScreenState extends State<SelectLocationScreen> {
+class _SelectPickUpLocationScreenState
+    extends State<SelectPickUpLocationScreen> {
   LatLng? selectedLocation;
   LatLng? locationCoordinates;
   late GoogleMapController mapController;
@@ -48,7 +46,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
     super.initState();
     WidgetsBinding.instance
         .addPostFrameCallback((_) async => await initializeMap());
-    listenToBusUpdates();
+    listentobuschosen(); // Listen to changes in real-time.
   }
 
   static const CameraPosition _initialCameraPosition = CameraPosition(
@@ -57,12 +55,10 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   );
 
   Future<void> initializeMap() async {
-    // Initialization logic can be added here if needed
+    // Initialization logic can be added if required
   }
 
-  void listenToBusUpdates() {
-    print(widget.pickupcoordinates);
-    print(widget.pickupaddress);
+  void listentobuschosen() {
     FirebaseFirestore.instance
         .collection('companies')
         .doc(widget.companyId)
@@ -159,7 +155,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextContent(name: "Select Destination", fcolor: Colors.white),
+        title: TextContent(name: 'VIA: ${widget.via}', fcolor: Colors.white),
         backgroundColor: Colors.redAccent,
         centerTitle: true,
         leading: IconButton(
@@ -196,7 +192,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextContent(
-                      name: 'Selected Destination',
+                      name: 'Pick Up Location',
                       fontsize: 20,
                       fontweight: FontWeight.w700,
                     ),
@@ -207,13 +203,8 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                     const Spacer(),
                     EButtons(
                       onPressed: () {
-                        if(widget.seatQuantity == 1){
-                          print('to one reservation');
-                          Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SeatReservationScreen(companyId: widget.companyId, companyname: widget.compName, busnum: widget.busnum, mylocation: widget.pickupcoordinates, destination: address, destinationcoordinates: locationCoordinates as LatLng)));
-                        }else{
-                          print('To many reservations');
-                          Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ReservationDetailsScreen(compName: widget.compName, companyId: widget.companyId, busnum: widget.busnum, currentlocation: widget.pickupcoordinates, destination: address, destinationcor: locationCoordinates as LatLng, bustype: widget.bustype, compId: widget.companyId)));
-                        }
+                        print('Executed');
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SelectLocationScreen(companyId: widget.companyId, compName: widget.compName, busnum: widget.busnum, pickupaddress: address, pickupcoordinates: locationCoordinates as LatLng, seatQuantity: widget.seatQuantity, bustype: widget.bustype,)));
                       },
                       name: 'Confirm',
                       bcolor: Colors.blueAccent,

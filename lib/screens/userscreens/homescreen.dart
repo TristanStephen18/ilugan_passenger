@@ -71,10 +71,14 @@ class _HomeScreenState extends State<HomeScreen> {
         int availableSeats = busData['available_seats'] ?? 0;
         int occupiedSeats = busData['occupied_seats'] ?? 0;
         int reservedSeats = busData['reserved_seats'] ?? 0;
+        String from = busData['terminalloc'] ?? 'Dagupan';
+        String to = busData['destination'] ?? 'Cubao';
         GeoPoint geoPoint = busData['current_location'] ?? const GeoPoint(0, 0);
          GeoPoint geoPointd = busData['destination_coordinates'] ?? const GeoPoint(0, 0);
         LatLng currentLocation = LatLng(geoPoint.latitude, geoPoint.longitude);
         LatLng destinationLocation = LatLng(geoPointd.latitude, geoPointd.longitude);
+        String via = busData['via'] ?? 'McArthur Highway'; 
+        String bustype = busData['bustype'];
 
         String address = await ApiCalls()
             .reverseGeocode(currentLocation.latitude, currentLocation.longitude);
@@ -108,7 +112,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     myloc,
                     hasreservation,
                     destinationLocation,
-                    currentLocation
+                    currentLocation,
+                    from,
+                    to,
+                    via,
+                    bustype,
                 );
               },
               icon: busmarkers,

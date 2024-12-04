@@ -25,7 +25,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -33,43 +32,58 @@ class _LoginScreenState extends State<LoginScreen> {
     Notif().requestNotificationPermissions(context);
   }
 
+  final _auth = FirebaseAuth.instance;
+
   final formkey = GlobalKey<FormState>();
 
   var emailcon = TextEditingController();
   var passcon = TextEditingController();
 
-  void checklogin()async{
-    if(formkey.currentState!.validate()){
-    QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Logging you in", title: "ILugan");
-    await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcon.text, 
-    password: passcon.text).then((UserCredential cred) async{
-      Account().setstatus(cred.user!.uid, 'login');
-      Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const TypeCheckerScreen()));
-    }).catchError((error){
-      Navigator.of(context).pop();
-      print(error.code);
-      QuickAlert.show(context: context, type: QuickAlertType.error, text: error.message.toString(), title: "Oooopppss");
-    });
-  }else{
-    return;
-  }
+  void checklogin() async {
+    if (formkey.currentState!.validate()) {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.loading,
+          text: "Logging you in",
+          title: "ILugan");
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: emailcon.text, password: passcon.text)
+          .then((UserCredential cred) async {
+        Account().setstatus(cred.user!.uid, 'login');
+        Navigator.of(context).pop();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const TypeCheckerScreen()));
+      }).catchError((error) {
+        Navigator.of(context).pop();
+        print(error.code);
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            text: error.message.toString(),
+            title: "Oooopppss");
+      });
+    } else {
+      return;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
-  final screenHeight = MediaQuery.of(context).size.height;
-  final screenWidth = MediaQuery.of(context).size.width;
-
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.redAccent,
       appBar: AppBar(
         centerTitle: true,
         toolbarHeight: 100,
-        title:TextContent(name: 'Log in', fontsize: 
-        30, fcolor: Colors.white, fontweight: FontWeight.w500,),
+        title: TextContent(
+          name: 'Log in',
+          fontsize: 30,
+          fcolor: Colors.white,
+          fontweight: FontWeight.w500,
+        ),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
@@ -89,7 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
         backgroundColor: Colors.transparent,
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Form(
@@ -108,7 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         fcolor: Colors.white,
                         fontsize: 16,
                       ),
-                      TextContent(name: "login details. ", fcolor: Colors.white),
+                      TextContent(
+                          name: "login details. ", fcolor: Colors.white),
                       const Gap(40),
                       TextContent(name: "Email", fcolor: Colors.white),
                       const Gap(5),
@@ -120,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextContent(name: "Password", fcolor: Colors.white),
                       const Gap(5),
                       LoginPassTfields(
-                        field_controller: passcon, 
+                        field_controller: passcon,
                         showpassIcon: Icons.visibility,
                         hidepassIcon: Icons.visibility_off,
                         showpass: true,
@@ -131,18 +145,43 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           children: [
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                if(emailcon.text == ""){
+                                  QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.error,
+                                          title: 'Pasword Reset',
+                                          text:
+                                              'Provide an email first');
+                                }else{
+                                  await _auth
+                                    .sendPasswordResetEmail(
+                                        email: emailcon.text)
+                                    .then(
+                                      (value) => QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.info,
+                                          title: 'Pasword Reset',
+                                          text:
+                                              'A password reset link has been sent to ${emailcon.text}'),
+                                    );
+                                }
+                              },
                               child: const Text(
                                 'Forgot User Password?',
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SignUpScreen()));
-                              },
-                              child: TextContent(name: 'Dont have an account?', fcolor: const Color.fromARGB(255, 117, 190, 250),)
-                            ),
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) => SignUpScreen()));
+                                },
+                                child: TextContent(
+                                  name: 'Dont have an account?',
+                                  fcolor:
+                                      const Color.fromARGB(255, 117, 190, 250),
+                                )),
                           ],
                         ),
                       ),
@@ -160,7 +199,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.bottomCenter,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 90),
-                        child: EButtons(onPressed: checklogin, name: "Log In", tcolor: Colors.white, bcolor: Colors.redAccent, elevation: 15,),
+                        child: EButtons(
+                          onPressed: checklogin,
+                          name: "Log In",
+                          tcolor: Colors.white,
+                          bcolor: Colors.redAccent,
+                          elevation: 15,
+                        ),
                       ),
                     ),
                   ),

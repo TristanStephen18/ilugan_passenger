@@ -143,5 +143,22 @@ void reservationnotification(String busnum, String companyname, String resnum) {
   });
 }
 
+void rejectedrequestnotif(String reason) {
+    // String accountcreationtime = DateFormat()
+  // print('Creating notification with title: $title and status: $status'); // Debugging print
+  DateTime now = DateTime.now();
+  // String formattedDate = DateFormat('MMMM d, y - h:mm a').format(now);
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 15, // A unique ID for this notification
+      channelKey: 'ilugan_notif', // Channel should match the one initialized
+      title: 'Your Request was Rejected',
+      body: 'The conductor has rejected your request due to $reason',
+      notificationLayout: NotificationLayout.Default,
+      // icon: 'assets/images/logo/logo.png'
+    ),
+  );
+}
+
 
 }
