@@ -256,7 +256,13 @@ class _TicketScreenState extends State<TicketScreen> {
                         paymentId: link.split(" ")[1],
                         resnum: resnum.toString(),
                         type: widget.type,
-                        link: link.split(" ")[0])));
+                        link: link.split(" ")[0],
+                        seatsquantity: 1,
+                        busseats: [],
+                        ),
+
+                        )
+                        );
                 setState(() {
                   ispaying = !ispaying;
                 });

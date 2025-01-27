@@ -1,7 +1,10 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
 import 'package:ilugan_passsenger/notifications/model.dart';
+import 'package:ilugan_passsenger/screens/reservation/paymongopayment.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -9,14 +12,26 @@ class WaitingForAcceptanceScreen extends StatefulWidget {
   final String companyId;
   final String busNumber;
   final double amount;
+  final String pickup_location;
+  final String destination;
+  final String distance;
+  final String type;
+   final String companyname;
   final int requestId; // This is the auto-incremented ID for the document
+  final int seatsquantity;
 
   const WaitingForAcceptanceScreen({
     Key? key,
     required this.companyId,
     required this.busNumber,
     required this.requestId,
-    required this.amount
+    required this.amount,
+    required this.pickup_location,
+    required this.destination,
+    required this.distance,
+    required this.type,
+    required this.companyname,
+    required this.seatsquantity
   }) : super(key: key);
 
   @override
@@ -52,6 +67,30 @@ class _WaitingForAcceptanceScreenState extends State<WaitingForAcceptanceScreen>
     // TODO: implement initState
     super.initState();
     createpaymentlink();
+    getReservationNumber();
+  }
+
+  String? resnum;
+
+  void getReservationNumber() async {
+    QuerySnapshot snapshots = await FirebaseFirestore.instance
+        .collection('companies')
+        .doc(widget.companyId)
+        .collection('buses')
+        .doc(widget.busNumber)
+        .collection('reservations')
+        .get();
+
+    if (snapshots.docs.isEmpty) {
+      resnum = "000001";
+    } else {
+      int entries = snapshots.docs.length + 1;
+      String reservationNumber = entries.toString().padLeft(6, '0');
+      resnum = reservationNumber;
+      print('REservation number is: $reservationNumber');
+    }
+
+    setState(() {});
   }
 
 
@@ -72,7 +111,7 @@ class _WaitingForAcceptanceScreenState extends State<WaitingForAcceptanceScreen>
         stream: FirebaseFirestore.instance
             .collection('companies')
             .doc(widget.companyId)
-            .collection('buses')
+            .collection('buses')  
             .doc(widget.busNumber)
             .collection('requests')
             .doc(
@@ -102,8 +141,7 @@ class _WaitingForAcceptanceScreenState extends State<WaitingForAcceptanceScreen>
           final seatsassigned = request['seats'];
 
           if (status == 'accepted' && seatsassigned.length > 0) {
-            return const Center(
-                child: Text("Request accepted! Redirecting..."));
+            return PaymentScreen(link: link.split(" ")[0], companyId: widget.companyId, current: DateTime.now(), currentlocc: widget.pickup_location, destination: widget.destination, amount: widget.amount.toString(), busnum: widget.busNumber, companyname: widget.companyname, distance: widget.distance, type: widget.type, resnum: resnum.toString(), paymentId: link.split(' ')[1], seatsquantity: widget.seatsquantity, busseats: seatsassigned,);
           } else if (status == 'rejected') {
             Notif().rejectedrequestnotif(reason.toString());
             Navigator.of(context).pop();

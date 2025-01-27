@@ -20,7 +20,10 @@ class Ticket extends StatefulWidget {
       required this.companyname,
       required this.distance,
       required this.type,
-      required this.resnum});
+      required this.resnum,
+      required this.seatquantity,
+      required this.seats,
+      });
 
   DateTime current;
   String currentlocc;
@@ -31,6 +34,8 @@ class Ticket extends StatefulWidget {
   String distance;
   String type;
   String resnum;
+  final int seatquantity;
+  final List<dynamic> seats;
 
   @override
   State<Ticket> createState() => _TicketState();
@@ -179,18 +184,18 @@ class _TicketState extends State<Ticket> {
                           fontweight: FontWeight.bold,
                         ),
                         TextContent(
-                          name: 'Availed Seats: 1 seat',
+                          name: 'Availed Seats: ${widget.seatquantity} seat',
                           fontsize: 15,
                           fontweight: FontWeight.bold,
                         ),
                         TextContent(
-                          name: 'Fare: ${widget.amount}',
+                          name: 'Fare: ${widget.amount} php',
                           fontsize: 18,
                           fontweight: FontWeight.bold,
                         ),
                         TextContent(
                           name:
-                              'Discounted: ${widget.type != "Regular" ? "20%" : "None"}',
+                              'Type: ${widget.type}',
                           fontsize: 15,
                           fontweight: FontWeight.bold,
                         ),
@@ -199,6 +204,7 @@ class _TicketState extends State<Ticket> {
                           fontsize: 15,
                           fontweight: FontWeight.bold,
                         ),
+                        TextContent(name: 'Seat Numbers: ${widget.seats}'),
                         const Gap(40),
                         QrImageView(
                           data: widget.resnum,

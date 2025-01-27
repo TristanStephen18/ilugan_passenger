@@ -196,7 +196,7 @@ class DisplayItems {
                           duration: const Duration(seconds: 1),
                         );
                       } else {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ReservationChoiceScreen(busnum: busnumber, compName: buscompany, companyId: companyId, currentlocation: currentloc, via: via, bustype: bustype,)));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ReservationChoiceScreen(busnum: platenumber, compName: buscompany, companyId: companyId, currentlocation: currentloc, via: via, bustype: bustype,)));
                         // Navigator.of(context).push(MaterialPageRoute(
                         //   builder: (_) => SelectLocationScreen(
                         //     companyId: companyId,

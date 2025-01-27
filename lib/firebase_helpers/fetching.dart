@@ -55,6 +55,7 @@ class FetchingData {
 
       return data['token'];  
     }
+    return null;
     // return null;
   }
 
@@ -66,6 +67,7 @@ class FetchingData {
 
       return data['id'];  
     }
+    return null;
 
     // return null;
   }

@@ -4,12 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
+import 'package:ilugan_passsenger/firebase_helpers/fetching.dart';
+import 'package:ilugan_passsenger/screens/reservation/manyreservation.dart';
 import 'package:ilugan_passsenger/screens/reservation/reservation.dart';
 import 'package:ilugan_passsenger/screens/reservation/reservationdetailsinput.dart';
 import 'package:ilugan_passsenger/widgets/widgets.dart';
 
 class SelectLocationScreen extends StatefulWidget {
-  SelectLocationScreen({
+  const SelectLocationScreen({
     super.key,
     required this.companyId,
     required this.compName,
@@ -49,6 +51,17 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
     WidgetsBinding.instance
         .addPostFrameCallback((_) async => await initializeMap());
     listenToBusUpdates();
+    initializedata();
+  }
+
+  String? acctype;
+  String? id;
+
+  void initializedata() async{
+    acctype = await FetchingData().getacctype();
+    id = await FetchingData().getidurl();
+    print(acctype);
+    print(id);
   }
 
   static const CameraPosition _initialCameraPosition = CameraPosition(
@@ -209,7 +222,79 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       onPressed: () {
                         if(widget.seatQuantity == 1){
                           print('to one reservation');
-                          Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SeatReservationScreen(companyId: widget.companyId, companyname: widget.compName, busnum: widget.busnum, mylocation: widget.pickupcoordinates, destination: address, destinationcoordinates: locationCoordinates as LatLng)));
+                          if(acctype == 'Student'){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ManyReservationDetailsScreen(
+                                      companyName: widget.compName,
+                                      busNumber: widget.busnum,
+                                      origin: widget.pickupaddress,
+                                      destination: address,
+                                      distance: '70 km',
+                                      fare: '90',
+                                      students: 1,
+                                      seniors: 0,
+                                      pwd: 0,
+                                      regulars: 0,
+                                      idurl: id,
+                                      origincoordinates: widget.pickupcoordinates,
+                                      bustype: widget.bustype,
+                                      destincor: locationCoordinates as LatLng,
+                                      companyId: widget.companyId,
+                                    )));
+                          }else if(acctype == 'PWD'){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ManyReservationDetailsScreen(
+                                      companyName: widget.compName,
+                                      busNumber: widget.busnum,
+                                      origin: widget.pickupaddress,
+                                      destination: address,
+                                      distance: '70 km',
+                                      fare: '90',
+                                      students: 0,
+                                      seniors: 0,
+                                      pwd: 1,
+                                      regulars: 0,
+                                      idurl: id,
+                                      origincoordinates: widget.pickupcoordinates,
+                                      bustype: widget.bustype,
+                                      destincor: locationCoordinates as LatLng,
+                                      companyId: widget.companyId,
+                                    )));
+                          }else if(acctype == 'Regular'){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ManyReservationDetailsScreen(
+                                      companyName: widget.compName,
+                                      busNumber: widget.busnum,
+                                      origin: widget.pickupaddress,
+                                      destination: address,
+                                      distance: '70 km',
+                                      fare: '90',
+                                      students: 0,
+                                      seniors: 1,
+                                      pwd: 0,
+                                      regulars: 0,
+                                      origincoordinates: widget.pickupcoordinates,
+                                      bustype: widget.bustype,
+                                      destincor: locationCoordinates as LatLng,
+                                      companyId: widget.companyId,
+                                    )));
+                          }else{
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ManyReservationDetailsScreen(
+                                      companyName: widget.compName,
+                                      busNumber: widget.busnum,
+                                      origin: widget.pickupaddress,
+                                      destination: address,
+                                      distance: '70 km',
+                                      fare: '90',
+                                      students: 0,
+                                      idurl: id,
+                                      seniors: 1,
+                                      pwd: 0,
+                                      regulars: 0,
+                                      origincoordinates: widget.pickupcoordinates,
+                                      bustype: widget.bustype,
+                                      destincor: locationCoordinates as LatLng,
+                                      companyId: widget.companyId,
+                                    )));
+                          }
+                          // Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SeatReservationScreen(companyId: widget.companyId, companyname: widget.compName, busnum: widget.busnum, mylocation: widget.pickupcoordinates, destination: address, destinationcoordinates: locationCoordinates as LatLng)));
                         }else{
                           print('To many reservations');
                           Navigator.of(context).push(MaterialPageRoute(builder: (_)=>ReservationDetailsScreen(compName: widget.compName, companyId: widget.companyId, busnum: widget.busnum, currentlocation: widget.pickupcoordinates, destination: address, destinationcor: locationCoordinates as LatLng, bustype: widget.bustype, compId: widget.companyId)));

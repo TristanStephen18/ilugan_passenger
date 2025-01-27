@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:io';
 
@@ -27,6 +27,7 @@ class ManyReservationDetailsScreen extends StatefulWidget {
   final LatLng origincoordinates;
   final String bustype;
   File? ids;
+  String? idurl;
   final LatLng destincor;
   final String companyId;
 
@@ -45,9 +46,9 @@ class ManyReservationDetailsScreen extends StatefulWidget {
       required this.regulars,
       required this.bustype,
       this.ids,
+      this.idurl,
       required this.destincor,
-      required this.companyId
-      });
+      required this.companyId});
 
   @override
   State<ManyReservationDetailsScreen> createState() =>
@@ -134,33 +135,62 @@ class _ManyReservationDetailsScreenState
   }
 
   void sendRequestToBusConductor(Map<String, dynamic> requestData) async {
-  try {
-    // Reference to the requests collection
-    CollectionReference requestsRef = FirebaseFirestore.instance
-        .collection('companies')
-        .doc(widget.companyId)
-        .collection('buses')
-        .doc(widget.busNumber)
-        .collection('requests');
+    try {
+      // Reference to the requests collection
+      CollectionReference requestsRef = FirebaseFirestore.instance
+          .collection('companies')
+          .doc(widget.companyId)
+          .collection('buses')
+          .doc(widget.busNumber)
+          .collection('requests');
 
-    // Fetch all documents in the collection
-    QuerySnapshot snapshot = await requestsRef.get();
+      // Fetch all documents in the collection
+      QuerySnapshot snapshot = await requestsRef.get();
 
-    // Generate the next document ID (assuming 0-based indexing)
-    int nextId = snapshot.docs.length + 1;
+      // Generate the next document ID (assuming 0-based indexing)
+      int nextId = snapshot.docs.length + 1;
 
-    // Create a new document with the auto-incremented ID
-    await requestsRef.doc(nextId.toString()).set(requestData);
-    Navigator.of(context).pop();
-    print("Request sent successfully with ID: $nextId");
-    Navigator.of(context).push(MaterialPageRoute(builder: (_)=>WaitingForAcceptanceScreen(companyId: widget.companyId, busNumber: widget.busNumber, requestId: nextId, amount: totalfare,)));
-  } catch (error) {
-    Navigator.of(context).pop();
-    QuickAlert.show(context: context, type: QuickAlertType.error, title: error.toString());
-    print("Error sending request: $error");
+      // Create a new document with the auto-incremented ID
+      await requestsRef.doc(nextId.toString()).set(requestData);
+      Navigator.of(context).pop();
+      print("Request sent successfully with ID: $nextId");
+
+      String type = "";
+      if(widget.pwd > 0){
+        type += ' PWD';
+      }
+      if(widget.students > 0){
+        type += ' Student';
+      }
+      if(widget.seniors > 0){
+        type += ' Senior';
+      }
+      if(widget.regulars > 0){
+        type += ' Regular';
+      }
+      print(type);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => WaitingForAcceptanceScreen(
+                companyId: widget.companyId,
+                busNumber: widget.busNumber,
+                requestId: nextId,
+                amount: totalfare,
+                companyname: widget.companyName,
+                destination: widget.destination,
+                distance: widget.distance,
+                pickup_location: widget.origin,
+                type: type,
+                seatsquantity: (widget.pwd + widget.regulars + widget.seniors + widget.students),
+              )));
+    } catch (error) {
+      Navigator.of(context).pop();
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: error.toString());
+      print("Error sending request: $error");
+    }
   }
-}
-
 
   void calculatefare() {
     if (widget.bustype == 'Air-Conditioned') {
@@ -171,16 +201,22 @@ class _ManyReservationDetailsScreenState
         totalfare =
             ((widget.pwd + widget.regulars + widget.seniors + widget.students) *
                 48);
-      }else{
-        if(widget.pwd > 0 || widget.seniors > 0 || widget.students > 0){
-          totalfare = totalfare + (((((double.parse(distance.toString().split(' ')[0]) - 30) * 2) + 48) * 0.80) * (widget.pwd + widget.seniors + widget.students));
+      } else {
+        if (widget.pwd > 0 || widget.seniors > 0 || widget.students > 0) {
+          totalfare = totalfare +
+              (((((double.parse(distance.toString().split(' ')[0]) - 30) * 2) +
+                          48) *
+                      0.80) *
+                  (widget.pwd + widget.seniors + widget.students));
         }
 
-        totalfare = totalfare + (((double.parse(distance.toString().split(' ')[0]) - 30) * 2) + 48);
+        totalfare = totalfare +
+            (((double.parse(distance.toString().split(' ')[0]) - 30) * 2) + 48);
       }
-    }else if(widget.bustype == 'Regular'){
-      totalfare = ((widget.pwd + widget.regulars + widget.seniors + widget.students) *
-                (double.parse(distance.toString().split(' ')[0]) * 2));
+    } else if (widget.bustype == 'Regular') {
+      totalfare =
+          ((widget.pwd + widget.regulars + widget.seniors + widget.students) *
+              (double.parse(distance.toString().split(' ')[0]) * 2));
     }
     setState(() {});
   }
@@ -217,7 +253,7 @@ class _ManyReservationDetailsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
+      appBar: AppBar(
         title: TextContent(name: "Reservation Details", fcolor: Colors.white),
         backgroundColor: Colors.redAccent,
         centerTitle: true,
@@ -288,13 +324,13 @@ class _ManyReservationDetailsScreenState
                   children: [
                     detailTile(
                       label: "From",
-                      value: '${widget.origin.substring(0, 25)}...',
+                      value: '${widget.origin.substring(0, 15)}...',
                       icon: Icons.location_on_outlined,
                     ),
                     const Divider(),
                     detailTile(
                       label: "To",
-                      value: '${widget.destination.substring(0, 25)}...',
+                      value: '${widget.destination.substring(0, 15)}...',
                       icon: Icons.location_on,
                     ),
                   ],
@@ -375,7 +411,9 @@ class _ManyReservationDetailsScreenState
                     const Divider(),
                     detailTile(
                       label: "Fare",
-                      value: totalfare != 0 ? '${totalfare.toStringAsFixed(2)} Php' : 'Loading...',
+                      value: totalfare != 0
+                          ? '${totalfare.toStringAsFixed(2)} Php'
+                          : 'Loading...',
                       icon: Icons.monetization_on,
                     ),
                   ],
@@ -388,7 +426,7 @@ class _ManyReservationDetailsScreenState
             // Reserve Button
             Center(
               child: ElevatedButton(
-                onPressed: () async{
+                onPressed: () async {
                   // Handle reservation confirmation
                   if (totalfare == 0 && distance == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -396,9 +434,14 @@ class _ManyReservationDetailsScreenState
                           content: Text("Your data is still being calculated")),
                     );
                   } else {
-                    QuickAlert.show(context: context, type: QuickAlertType.loading, title: 'Sending Request', text: 'Please wait a moment');
+                    QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.loading,
+                        title: 'Sending Request',
+                        text: 'Please wait a moment');
                     // Check if IDs file is not null
                     if (widget.ids != null) {
+                      print('With image');
                       String? fileUrl = await uploadFileToFirebase(widget.ids!);
                       if (fileUrl != null) {
                         // ScaffoldMessenger.of(context).showSnackBar(
@@ -409,27 +452,34 @@ class _ManyReservationDetailsScreenState
                         // Proceed with reservation process
 
                         Map<String, dynamic> content = {
-                          'pickup_location' : widget.origin,
-                          'pickup_location_coordinates': GeoPoint(widget.origincoordinates.latitude, widget.origincoordinates.longitude),
-                          'destination' : widget.destination,
-                          'destination_coordinates' : GeoPoint(widget.destincor.latitude, widget.destincor.longitude),
-                          'fare' : totalfare,
-                          'distance' : distance,
-                          'totalpassengers' : (widget.pwd + widget.regulars + widget.seniors + widget.students),
-                          'pwds' : widget.pwd,
-                          'seniors' : widget.seniors,
-                          'students' : widget.students,
-                          'regulars' : widget.regulars,
-                          'status' : 'pending',
-                          'reason' : '',
-                          'seats' : [],
-                          'ids' :  fileUrl,
-                          'datesent' : DateTime.now()
+                          'pickup_location': widget.origin,
+                          'pickup_location_coordinates': GeoPoint(
+                              widget.origincoordinates.latitude,
+                              widget.origincoordinates.longitude),
+                          'destination': widget.destination,
+                          'destination_coordinates': GeoPoint(
+                              widget.destincor.latitude,
+                              widget.destincor.longitude),
+                          'fare': totalfare,
+                          'distance': distance,
+                          'totalpassengers': (widget.pwd +
+                              widget.regulars +
+                              widget.seniors +
+                              widget.students),
+                          'pwds': widget.pwd,
+                          'seniors': widget.seniors,
+                          'students': widget.students,
+                          'regulars': widget.regulars,
+                          'status': 'pending',
+                          'reason': '',
+                          'seats': [],
+                          'ids': fileUrl,
+                          'datesent': DateTime.now()
                         };
                         sendRequestToBusConductor(content);
 
                         print(content);
-                        
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content: Text("Reservation Confirmed!")),
@@ -440,27 +490,63 @@ class _ManyReservationDetailsScreenState
                               content: Text("File upload failed. Try again.")),
                         );
                       }
-                    } else {
+                    } else if (widget.idurl != null && widget.ids == null) {
+                      print('Usingonly one acc');
                       Map<String, dynamic> content = {
-                          'pickup_location' : widget.origin,
-                          'pickup_location_coordinates': GeoPoint(widget.origincoordinates.latitude, widget.origincoordinates.longitude),
-                          'destination' : widget.destination,
-                          'destination_coordinates' : GeoPoint(widget.destincor.latitude, widget.destincor.longitude),
-                          'fare' : totalfare,
-                          'distance' : distance,
-                          'totalpassengers' : (widget.pwd + widget.regulars + widget.seniors + widget.students),
-                          'pwds' : widget.pwd,
-                          'seniors' : widget.seniors,
-                          'students' : widget.students,
-                          'regulars' : widget.regulars,
-                          'status' : 'pending',
-                          'reason' : '',
-                          'seats' : [],
-                          'ids' :  "",
-                          'datesent' : DateTime.now()
-                        };
-                        print(content);
-                        sendRequestToBusConductor(content);
+                        'pickup_location': widget.origin,
+                        'pickup_location_coordinates': GeoPoint(
+                            widget.origincoordinates.latitude,
+                            widget.origincoordinates.longitude),
+                        'destination': widget.destination,
+                        'destination_coordinates': GeoPoint(
+                            widget.destincor.latitude,
+                            widget.destincor.longitude),
+                        'fare': totalfare,
+                        'distance': distance,
+                        'totalpassengers': (widget.pwd +
+                            widget.regulars +
+                            widget.seniors +
+                            widget.students),
+                        'pwds': widget.pwd,
+                        'seniors': widget.seniors,
+                        'students': widget.students,
+                        'regulars': widget.regulars,
+                        'status': 'pending',
+                        'reason': '',
+                        'seats': [],
+                        'ids': widget.idurl,
+                        'datesent': DateTime.now()
+                      };
+                      sendRequestToBusConductor(content);
+                    } else {
+                      print('regular');
+                      Map<String, dynamic> content = {
+                        'pickup_location': widget.origin,
+                        'pickup_location_coordinates': GeoPoint(
+                            widget.origincoordinates.latitude,
+                            widget.origincoordinates.longitude),
+                        'destination': widget.destination,
+                        'destination_coordinates': GeoPoint(
+                            widget.destincor.latitude,
+                            widget.destincor.longitude),
+                        'fare': totalfare,
+                        'distance': distance,
+                        'totalpassengers': (widget.pwd +
+                            widget.regulars +
+                            widget.seniors +
+                            widget.students),
+                        'pwds': widget.pwd,
+                        'seniors': widget.seniors,
+                        'students': widget.students,
+                        'regulars': widget.regulars,
+                        'status': 'pending',
+                        'reason': '',
+                        'seats': [],
+                        'ids': "",
+                        'datesent': DateTime.now()
+                      };
+                      print(content);
+                      sendRequestToBusConductor(content);
                       // ScaffoldMessenger.of(context).showSnackBar(
                       //   const SnackBar(content: Text("ID file is missing!")),
                       // );
@@ -468,18 +554,19 @@ class _ManyReservationDetailsScreenState
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  // primary: Colors.redAccent,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-          
-                  ),
-                  backgroundColor: Colors.redAccent
-                ),
+                    // primary: Colors.redAccent,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    backgroundColor: Colors.redAccent),
                 child: const Text(
                   "Send Reservation Request",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ),

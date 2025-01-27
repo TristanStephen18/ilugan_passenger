@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 // import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:ilugan_passsenger/api/apicalls.dart';
 import 'package:ilugan_passsenger/screens/reservation/ticketdownload.dart';
-import 'package:ilugan_passsenger/widgets/widgets.dart';
+// import 'package:ilugan_passsenger/widgets/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -29,7 +29,10 @@ class PaymentScreen extends StatefulWidget {
       required this.distance,
       required this.type,
       required this.resnum,
-      required this.paymentId});
+      required this.paymentId,
+      required this.seatsquantity,
+      required this.busseats
+      });
 
   DateTime current;
   String currentlocc;
@@ -42,6 +45,8 @@ class PaymentScreen extends StatefulWidget {
   String type;
   String resnum;
   String paymentId;
+  final int seatsquantity;
+  final List<dynamic> busseats;
 
   final String
       link; // Make it a final since it's passed as a required argument.
@@ -108,8 +113,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       // Calculate new totals
       double newIncome = income + double.parse(widget.amount.toString());
-      int newNumberOfPassengers = numberOfPassengers + 1;
-      int newnumberofReservations = numberofreservations + 1;
+      int newNumberOfPassengers = numberOfPassengers + widget.seatsquantity;
+      int newnumberofReservations = numberofreservations + widget.seatsquantity;
 
       // Set the document with updated values (or create it if it doesn’t exist)
       await documentRef.set({
@@ -156,8 +161,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       // Calculate new totals
       double newIncome = income + double.parse(widget.amount.toString());
-      int newNumberOfPassengers = numberOfPassengers + 1;
-      int newnumberofreservations = numberofreservations + 1;
+      int newNumberOfPassengers = numberOfPassengers + widget.seatsquantity;
+      int newnumberofreservations = numberofreservations + widget.seatsquantity;
 
       // Set the document with updated values (or create it if it doesn’t exist)
       await documentRef.set({
@@ -178,6 +183,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   distance: widget.distance,
                   type: widget.type,
                   resnum: widget.resnum,
+                  seatquantity: widget.seatsquantity,
+                  seats: widget.busseats,
                 )));
       });
 
@@ -209,7 +216,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         "distance_traveled": widget.distance,
         "busnumber": widget.busnum,
         "bus_company": widget.companyname,
-        "label" : "pending"
+        "label" : "pending",
+        "type" : widget.type,
       }).then((value) {
         addCompanyIncome();
         print("Reservation Successful");
@@ -225,9 +233,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .collection('buses')
         .doc(widget.busnum)
         .update({
-      'available_seats': avail - 1,
-      'occupied_seats': occu + 1,
-      'reserved_seats': res + 1
+      'available_seats': avail - widget.seatsquantity,
+      'occupied_seats': occu + widget.seatsquantity,
+      'reserved_seats': res + widget.seatsquantity
     }).then((value) {
       print('Bus Data Updated');
     }).catchError((error) {
@@ -290,8 +298,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
       'from': widget.currentlocc,
       'to': widget.destination,
       'date_time': widget.current,
-      'seats_reserved': 1,
+      'seats_reserved': widget.seatsquantity,
+      'seats': widget.busseats,
       'accomplished': false,
+      'type' : widget.type
 
     }).then((value) {
       updateBusData(seatsavail, occ, reserved);
@@ -307,20 +317,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: TextContent(
-          name: 'Payment',
-          fontsize: 20,
-          fcolor: Colors.white,
-          fontweight: FontWeight.w500,
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.yellow),
-          onPressed: () => Navigator.pop(context),
-        ),
-        backgroundColor: Colors.redAccent,
-      ),
       body: paymentlink != null
           ? WebViewWidget(controller: controller)
           : const Center(child: CircularProgressIndicator()),

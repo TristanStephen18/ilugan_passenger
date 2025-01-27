@@ -83,7 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
         String address = await ApiCalls()
             .reverseGeocode(currentLocation.latitude, currentLocation.longitude);
 
-        if(hronbusnum != null && hronbusnum == plateNumber && reservationnumber != null){
+        if(hronbusnum != null && hronbusnum == plateNumber && reservationnumber != null && hasreservation == true){
+          print(hasreservation);
           print('Bus Found');
           print('$hronbusnum is $plateNumber');
           print(reservationnumber);
@@ -143,13 +144,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (snapshot.exists) {
         var data = snapshot.data() as Map<String, dynamic>;
-        setState(() {
           email = data['email'];
           username = data['username'];
           hasreservation = data['hasreservation'];
           hronbusnum = data['busnum'];
           reservationnumber = data['current_reservation'];
-        });
         if(hasreservation == true && hronbusnum != ""){
           print("waiting for bus");
           // ApiCalls().getDistance(, );
